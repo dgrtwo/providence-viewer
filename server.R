@@ -16,8 +16,6 @@ shinyServer(function(input, output) {
     output$categories_plot <- renderPlot({
         j <- json()
         if (!is.null(j)) {
-            #infile <- "Stack Exchange personalized prediction data 2015-01-29.json"
-            #input <- list(stacks = 6, tags = 10)
             tidied <- j$Data %>% ldply(melt, .id = "Type") %>%
                 rename(Category = L1) %>%
                 group_by(Type) %>%
