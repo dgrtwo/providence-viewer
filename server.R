@@ -14,7 +14,6 @@ shinyServer(function(input, output) {
     })
     
     output$categories_plot <- renderPlot({
-        print("here")
         j <- json()
         if (!is.null(j)) {
             #infile <- "Stack Exchange personalized prediction data 2015-01-29.json"
@@ -37,7 +36,8 @@ shinyServer(function(input, output) {
             g <- ggplot(filtered, aes(Category, value)) +
                 geom_bar(stat = "identity") +
                 facet_wrap(~ Type, scales = "free") +
-                theme(axis.text.x = element_text(angle = 90, hjust = 1, face = 'bold'))
+                theme(axis.text.x = element_text(angle = 90, hjust = 1,
+                                                 face = 'bold', size = 9))
             
             print(g)
         }
