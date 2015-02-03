@@ -5,6 +5,8 @@ library(dplyr)
 library(ggplot2)
 library(rjson)
 
+compact <- function(x) Filter(function(e) length(e) > 0, x)
+
 shinyServer(function(input, output) {
     json <- reactive({
         if (!is.null(input$data_file)) {
@@ -16,7 +18,8 @@ shinyServer(function(input, output) {
     output$categories_plot <- renderPlot({
         j <- json()
         if (!is.null(j)) {
-            tidied <- j$Data %>% ldply(melt, .id = "Type") %>%
+            tidied <- j$Data %>% compact() %>%
+                ldply(melt, .id = "Type") %>%
                 rename(Category = L1) %>%
                 group_by(Type) %>%
                 filter(length(Category) > 1)
