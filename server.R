@@ -18,7 +18,9 @@ shinyServer(function(input, output) {
     output$categories_plot <- renderPlot({
         j <- json()
         if (!is.null(j)) {
-            tidied <- j$Data %>% compact() %>%
+            tidied <- j$Data[c("TagViews", "InterestingTags", "MinorWebDeveloperKinds", "MinorMobileDeveloperKinds",
+            "MinorOtherDeveloperKinds", "TechStacks")] %>%
+                compact() %>%
                 ldply(melt, .id = "Type") %>%
                 rename(Category = L1) %>%
                 group_by(Type) %>%
@@ -28,9 +30,11 @@ shinyServer(function(input, output) {
             num_cat <- data.frame(Type = c("TechStacks", "TagViews"),
                                   Limit = c(input$stacks, input$tags))
             
-            filtered <- tidied %>% left_join(num_cat) %>%
-                mutate(Limit = ifelse(is.na(Limit), 100, Limit)) %>%
-                filter(rank(-value) <= Limit) %>%
+            filtered <- tidied %>%
+                left_join(num_cat) %>%
+                tidyr::replace_na(list(Limit = 100)) %>%
+                group_by(Type) %>%
+                filter(rank(-value) <= Limit, value > 1e-6) %>%
                 ungroup() %>%
                 mutate(Category = reorder(Category, value, function(x) -mean(x)))    
 
